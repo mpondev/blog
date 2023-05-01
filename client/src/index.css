@@ -1,0 +1,44 @@
+:root {
+  --primary-color: #181818;
+  --secondary-color: #f0f0f0;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --primary-color: #181818;
+    --secondary-color: #f0f0f0;
+  }
+}
+
+*,
+*::after,
+*::before {
+  margin: 0;
+  padding: 0;
+  box-sizing: inherit;
+}
+
+html {
+  box-sizing: border-box;
+  font-size: 62.5%;
+}
+
+body {
+  font-family: 'Poppins', sans-serif;
+  font-weight: 400;
+}
+
+img,
+picture,
+video,
+iframe,
+figure {
+  max-width: 100%;
+  width: 100%;
+  display: block;
+}
+
+ol,
+ul {
+  list-style: none;
+}
