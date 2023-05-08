@@ -1,6 +1,7 @@
-import { useState } from 'react';
+/* eslint-disable react/no-unescaped-entities */
+import { useContext, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import axios from 'axios';
+import { AuthContext } from '../context/authContext';
 
 function Login() {
   const [inputs, setInputs] = useState({
@@ -12,6 +13,8 @@ function Login() {
 
   const navigate = useNavigate();
 
+  const { login } = useContext(AuthContext);
+
   const handleChange = evt => {
     setInputs(prev => ({ ...prev, [evt.target.name]: evt.target.value }));
   };
@@ -19,7 +22,7 @@ function Login() {
   const handleSubmit = async evt => {
     evt.preventDefault();
     try {
-      await axios.post('api/auth/login', inputs);
+      await login(inputs);
       navigate('/');
     } catch (err) {
       setError(err.response.data);
@@ -43,7 +46,7 @@ function Login() {
           onChange={handleChange}
         />
         <button onClick={handleSubmit}>Login</button>
-        {err & <p>{err}</p>}
+        {err && <p>{err}</p>}
         <span>
           Don't you have an account? <Link to="/register">Register</Link>
         </span>
