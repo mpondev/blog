@@ -1,20 +1,25 @@
 import { useState } from 'react';
+import { useLocation, useNavigate } from 'react-router-dom';
 import ReactQuill from 'react-quill';
 import axios from 'axios';
+import moment from 'moment';
 import 'react-quill/dist/quill.snow.css';
 
 function Write() {
-  const [value, setValue] = useState('');
-  const [title, setTitle] = useState('');
+  const state = useLocation().state;
+  const [value, setValue] = useState(state?.desc || '');
+  const [title, setTitle] = useState(state?.title || '');
   const [file, setFile] = useState(null);
-  const [cat, setCat] = useState('');
+  const [cat, setCat] = useState(state?.cat || '');
+
+  const navigate = useNavigate();
 
   const upload = async () => {
     try {
       const formData = new FormData();
       formData.append('file', file);
       const res = await axios.post('/api/upload', formData);
-      console.log(res.data);
+      return res.data;
     } catch (err) {
       console.log(err);
     }
@@ -22,7 +27,27 @@ function Write() {
 
   const handleClick = async evt => {
     evt.preventDefault();
-    upload();
+    const imgUrl = await upload();
+
+    try {
+      state
+        ? await axios.put(`/api/posts/${state.id}`, {
+            title,
+            desc: value,
+            cat,
+            img: file ? imgUrl : '',
+          })
+        : await axios.post('/api/posts/', {
+            title,
+            desc: value,
+            cat,
+            img: file ? imgUrl : '',
+            date: moment(Date.now()).format('YYYY-MM-DD HH:mm:ss'),
+          });
+      navigate('/');
+    } catch (err) {
+      console.log(err);
+    }
   };
 
   return (
@@ -30,6 +55,7 @@ function Write() {
       <div className="content">
         <input
           type="text"
+          value={title}
           placeholder="Title"
           onChange={evt => setTitle(evt.target.value)}
         />
@@ -71,6 +97,7 @@ function Write() {
           <div className="cat">
             <input
               type="radio"
+              checked={cat === 'art'}
               name="cat"
               value="art"
               id="art"
@@ -81,6 +108,7 @@ function Write() {
           <div className="cat">
             <input
               type="radio"
+              checked={cat === 'science'}
               name="cat"
               value="science"
               id="science"
@@ -91,6 +119,7 @@ function Write() {
           <div className="cat">
             <input
               type="radio"
+              checked={cat === 'technology'}
               name="cat"
               value="technology"
               id="technology"
@@ -101,6 +130,7 @@ function Write() {
           <div className="cat">
             <input
               type="radio"
+              checked={cat === 'cinema'}
               name="cat"
               value="cinema"
               id="cinema"
@@ -111,6 +141,7 @@ function Write() {
           <div className="cat">
             <input
               type="radio"
+              checked={cat === 'design'}
               name="cat"
               value="design"
               id="design"
@@ -121,6 +152,7 @@ function Write() {
           <div className="cat">
             <input
               type="radio"
+              checked={cat === 'food'}
               name="cat"
               value="food"
               id="food"
